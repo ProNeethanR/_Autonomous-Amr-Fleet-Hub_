@@ -10,9 +10,9 @@ The project combines task allocation, robot-local A* planning, peer-intent confl
 > **Dashboard:** FastAPI + WebSocket + HTML5 Canvas  
 > **Live coordination:** fleet-level Hungarian allocation + robot-local A* + peer-intent reservations + runtime safety checks
 
-![Autonomous AMR Fleet Hub dashboard](assets/dashboard/fleet_dashboard_hud.png)
+[![Autonomous AMR Fleet Hub dashboard](assets/dashboard/fleet_dashboard_hud.png)](https://autonomous-amr-fleet-hub.vercel.app/)
 
-**Live web dashboard:** [https://beh-fleet-amr.vercel.app/](https://beh-fleet-amr.vercel.app/)
+**Live web dashboard:** [https://autonomous-amr-fleet-hub.vercel.app/](https://autonomous-amr-fleet-hub.vercel.app/)
 
 ---
 
