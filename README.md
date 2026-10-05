@@ -12,6 +12,8 @@ The project combines task allocation, robot-local A* planning, peer-intent confl
 
 ![Autonomous AMR Fleet Hub dashboard](assets/dashboard/fleet_dashboard_hud.png)
 
+**Live web dashboard:** [https://beh-fleet-amr.vercel.app/](https://beh-fleet-amr.vercel.app/)
+
 ---
 
 ## What it does
