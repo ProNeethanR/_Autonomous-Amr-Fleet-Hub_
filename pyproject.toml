@@ -3,6 +3,12 @@ name = "autonomous-amr-fleet-hub"
 version = "0.1.0"
 description = "Autonomous AMR Fleet Hub"
 requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.110,<1",
+    "uvicorn[standard]>=0.29,<1",
+    "numpy>=1.26,<3",
+    "scipy>=1.11,<2",
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["ref_sih_amr"]
