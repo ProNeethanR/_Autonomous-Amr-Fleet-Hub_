@@ -1,38 +1,38 @@
-# 🤖 Edge-AI Distributed Fleet Coordination for AMRs
+# Edge-AI Distributed Fleet Coordination for AMRs
 
 **SIH 2026 · Problem Statement 26123 · Bharat Electronics Limited**
 
 A distributed multi-robot coordination prototype for **Autonomous Mobile Robots (AMRs)** operating in smart warehouses.
 
-The project combines task allocation, robot-local A* planning, peer-intent conflict resolution, collision-safety checks, rerouting, failure recovery, direct UDP peer transport, telemetry, benchmarking, and a live fleet dashboard.
+The project combines task allocation, robot-local A* planning, peer-intent conflict resolution, runtime safety checks, dynamic rerouting, failure recovery, direct UDP peer communication, telemetry, reproducible benchmarking, and a live operations dashboard.
 
-> **Primary runtime:** `ref_sih_amr/`  
+> **Canonical runtime:** `ref_sih_amr/`  
 > **Dashboard:** FastAPI + WebSocket + HTML5 Canvas  
-> **Coordination:** Hungarian task allocation + robot-local A* + peer-intent reservations + runtime safety checks
+> **Live coordination:** fleet-level Hungarian allocation + robot-local A* + peer-intent reservations + runtime safety checks
 
-![SIH AMR Fleet Dashboard](assets/dashboard/fleet_dashboard_hud.png)
+![Autonomous AMR Fleet Hub dashboard](assets/dashboard/fleet_dashboard_hud.png)
 
 ---
 
-## ✨ What the prototype does
+## What it does
 
 | Capability | Implementation |
 |---|---|
-| 🤖 Multi-AMR coordination | Concurrent simulated robot managers |
-| 📦 Task allocation | Fleet allocator with Hungarian assignment |
-| 🧭 Navigation | Grid-based A* path planning |
-| 🔀 Conflict resolution | Robot-local A* + peer-intent reservations; CBS retained only as an explicit centralized benchmark strategy |
-| 🛡️ Safety | Vertex, edge-swap, occupancy and reservation checks |
-| 🚧 Dynamic rerouting | Blocked-cell detection and replanning |
-| 🔋 Resilience | Battery/failure handling and task reassignment |
-| 📡 Peer communication | Direct UDP peer mesh (`UdpPeerChannel`) plus deterministic in-process test transport |
-| 📊 Telemetry | Queue-based `TelemetryBus` + WebSocket stream |
-| 🖥️ Operations dashboard | Live fleet state, task pipeline and warehouse view |
-| 🧪 Benchmarking | Reproducible scenarios and coordination strategies |
+| Multi-AMR coordination | Concurrent simulated robot managers |
+| Task allocation | Hungarian assignment |
+| Navigation | Grid-based A* path planning |
+| Motion coordination | Robot-local planning with peer-intent reservations |
+| Safety | Vertex, edge-swap, occupancy, and reservation checks |
+| Dynamic rerouting | Blocked-cell detection and replanning |
+| Resilience | Battery/failure handling and task reassignment |
+| Peer communication | Direct UDP peer mesh with deterministic in-process test transport |
+| Telemetry | Queue-based `TelemetryBus` + WebSocket stream |
+| Operations dashboard | Live fleet state, task pipeline, and warehouse visualization |
+| Benchmarking | Reproducible scenarios and coordination strategies |
 
 ---
 
-## 🏗️ System architecture
+## Architecture
 
 ```text
                          SMART WAREHOUSE
@@ -45,37 +45,38 @@ The project combines task allocation, robot-local A* planning, peer-intent confl
                 ┌──────────────┼──────────────┐
                 │              │              │
           Task Allocation   A* Planning   Peer Comms
-          Hungarian Method  Grid Search    Heartbeats
+          Hungarian Method  Grid Search    Intent / Heartbeats
                 │              │              │
                 └──────────────┼──────────────┘
                                │
                  ┌─────────────▼─────────────┐
                  │     Robot-local Safety    │
-                 │ peer reservations / yield │
+                 │ reservations / yield /   │
+                 │ runtime conflict checks  │
                  └─────────────┬─────────────┘
                                │
                      ┌─────────▼─────────┐
                      │    TelemetryBus   │
                      └─────────┬─────────┘
                                │
-                       FastAPI WebSocket
+                       FastAPI + WebSocket
                                │
                      ┌─────────▼─────────┐
                      │   Fleet Dashboard │
-                     │  Canvas Warehouse │
+                     │  Canvas Warehouse  │
                      └───────────────────┘
 ```
 
-The live fleet uses the **P2P strategy**: each robot owns its reservation table and exchanges intent directly with peers. Hungarian allocation remains a fleet-level task-assignment service; CBS is not used by the live P2P motion loop and is retained for comparison/legacy validation.
+The live fleet uses the **P2P strategy** for motion coordination: each robot maintains its own reservation state and exchanges intent directly with peers. Hungarian allocation remains a fleet-level task-assignment service. CBS is retained as an explicit centralized comparison/benchmark strategy and is **not** the live P2P motion-coordination path.
 
 ---
 
-## 🖥️ Run the live dashboard
+## Run the dashboard
 
 ### Requirements
 
-- Python 3.12
-- Linux, macOS, or Windows with Python 3.10+
+- Python 3.10+ (Python 3.12 recommended)
+- Windows, Linux, or macOS
 
 ### Install runtime dependencies
 
@@ -83,15 +84,15 @@ The live fleet uses the **P2P strategy**: each robot owns its reservation table 
 python3 -m pip install -r requirements.txt
 ```
 
-The root `requirements.txt` contains the live dashboard/runtime dependencies. The dashboard owns an in-memory simulator lifecycle, so a persistent process/container is the canonical judge/demo deployment; serverless hosting should be treated as a preview/integration surface rather than durable fleet state.
-
-For full local validation, benchmark analysis, and optional ONNX training/inference:
+For full validation, benchmark analysis, and optional ML/ONNX tooling:
 
 ```bash
 python3 -m pip install -r requirements-dev.txt
 ```
 
 ### Start
+
+On Windows:
 
 ```powershell
 .\start_dashboard.bat
@@ -103,11 +104,11 @@ Then open:
 http://localhost:8000
 ```
 
-The dashboard backend starts the simulator and streams live fleet telemetry to the web frontend.
+The dashboard starts the simulator and streams live fleet telemetry to the web frontend.
 
-### Dashboard provides
+### Dashboard includes
 
-- Fleet robot state and positions
+- Fleet robot positions and state
 - Battery and velocity information
 - Current task assignments
 - Logistics order pipeline
@@ -117,7 +118,7 @@ The dashboard backend starts the simulator and streams live fleet telemetry to t
 
 ---
 
-## 🧪 Validation & benchmarking
+## Validation and benchmarking
 
 Validation records are maintained under [`docs/validation/`](docs/validation/).
 
@@ -127,9 +128,9 @@ Run the regression suite:
 python -m pytest ref_sih_amr/tests -q
 ```
 
-The regression suite covers architecture boundaries, allocation, collision avoidance, blocked aisles, robot failure recovery, communication degradation, planning behavior, and fleet coordination scenarios.
+The test suite covers architecture boundaries, allocation, collision avoidance, blocked aisles, robot-failure recovery, communication degradation, planning behavior, and fleet coordination scenarios.
 
-Benchmark scenarios and metrics live under:
+Benchmark scenarios and metrics are maintained under:
 
 ```text
 ref_sih_amr/experiments/
@@ -137,117 +138,114 @@ ref_sih_amr/experiments/
 
 Tracked metrics include:
 
-- Makespan
-- Task completion time
-- Waiting time
-- Collision count
-- Deadlock count
+- Makespan and task completion time
+- Waiting time and throughput
+- Collision and deadlock counts
 - Replan count
-- Throughput
-- Communication latency
-- Message loss
-- CPU / memory usage
-- Edge inference latency
-- Energy proxy metrics
+- Communication latency and message loss
+- CPU and memory usage
+- Edge-inference latency
+- Energy-proxy metrics
 
-The benchmark framework includes sequential execution, independent planning, stop-and-wait coordination, P2P local coordination, and the legacy CBS strategy. The acceptance matrix reports measured makespan reduction and zero-collision results across crossing, narrow-aisle, blocked-aisle and 8-AMR scenarios. See `docs/validation/P2P_ACCEPTANCE_MATRIX.md` for the latest recorded evidence. It does not hard-code a success claim.
+The benchmark framework includes sequential execution, independent planning, stop-and-wait coordination, P2P local coordination, and the legacy CBS comparison strategy.
+
+For the latest recorded decentralized acceptance evidence, see [`docs/validation/P2P_ACCEPTANCE_MATRIX.md`](docs/validation/P2P_ACCEPTANCE_MATRIX.md). The matrix reports measured results rather than hard-coding a success claim.
 
 ---
 
-## 📁 Repository structure
+## Repository structure
 
-`ref_sih_amr/` is the canonical SIH runtime. The Omniverse integration is isolated under `omniverse/` and its supporting assets/scenarios.
+`ref_sih_amr/` is the canonical SIH runtime. Omniverse/OpenUSD integration is isolated from that runtime.
 
 ```text
 SIH/
 ├── ref_sih_amr/                 # Canonical SIH AMR runtime
 │   ├── allocator/               # Task allocation
-│   ├── comms/                   # Simulated peer communication
-│   ├── dashboard/               # FastAPI backend + HTML5 Canvas dashboard
+│   ├── comms/                   # Peer communication
+│   ├── dashboard/               # FastAPI + HTML5 Canvas dashboard
 │   ├── experiments/             # Benchmark scenarios
 │   ├── robot/                   # Robot policies, A*, CBS, task management
 │   ├── sim/                     # Fleet simulation and orchestration
 │   └── tests/                   # Regression and behavioral tests
 │
-├── omniverse/                   # OpenUSD / Omniverse integration scripts
-├── assets/                      # Warehouse, USD and dashboard assets
+├── omniverse/                   # OpenUSD / Omniverse integration
+├── assets/                      # Warehouse and dashboard assets
 ├── scenarios/                   # Omniverse scenario assets
-├── mcp_fleet/                   # MCP integration
+├── mcp_fleet/                   # Optional MCP integration
 ├── docs/validation/             # Validation records
-├── start_dashboard.bat          # Canonical dashboard launcher
-├── requirements.txt             # Minimal live-runtime dependencies
-├── requirements-dev.txt         # Full validation/benchmark/ML dependencies
-├── .gitignore
-├── LICENSE
+├── start_dashboard.bat          # Dashboard launcher
+├── requirements.txt             # Live-runtime dependencies
+├── requirements-dev.txt         # Validation/benchmark/ML dependencies
 ├── SECURITY.md
+├── LICENSE
 └── README.md
 ```
 
-### Canonical runtime vs. Omniverse integration
+### Canonical runtime vs. Omniverse
 
-`ref_sih_amr/` is the **primary implementation** used by the automated regression suite and live dashboard.
+`ref_sih_amr/` is the **primary implementation** used by the regression suite and live dashboard.
 
-The Omniverse/MCP components are retained as an integration and visualization environment. They are **not required** to run the canonical simulator and dashboard.
-
-The repository no longer carries the inherited NVIDIA Kit application-template/tooling scaffolding; the project-specific runtime and integration code are kept separate.
+The Omniverse/MCP components are optional integration and visualization tooling. They are not required to run the canonical simulator, benchmarks, tests, or dashboard.
 
 ---
 
-## Evidence boundaries and deployment notes
+## Evidence boundaries
 
-### Task allocation is fleet-level, coordination is P2P
+### Fleet-level allocation, robot-level coordination
 
-The live runtime intentionally separates **task assignment** from **motion coordination**:
+The live runtime deliberately separates **task assignment** from **motion coordination**:
 
-- Hungarian allocation is a fleet-level optimization service that assigns queued orders to eligible AMRs.
-- Once a task is assigned, each AMR performs its own A* planning, owns its own reservation table, and exchanges intent directly with peers over UDP.
-- No fleet-wide reservation table or centralized motion coordinator is used by the live P2P path.
+- Hungarian allocation assigns queued orders to eligible AMRs.
+- Each assigned AMR performs its own A* planning.
+- Each AMR owns its local reservation state and exchanges intent directly with peers.
+- The live P2P path does not use a fleet-wide motion reservation table or centralized motion coordinator.
 
-This is an explicit architectural trade-off: the SIH requirement calls for decentralized robot-to-robot communication and multi-agent conflict resolution; task allocation is kept centralized so the prototype can optimize global order-to-robot assignment deterministically. Replacing this allocator with CBBA/auction bidding would be a separate research change and is not required to establish the current P2P motion-coordination evidence.
+This separation supports deterministic fleet-level task assignment while keeping motion coordination at the distributed robot level.
 
 ### Edge-class emulation
 
-No Raspberry Pi or Jetson measurement is currently claimed.
+No Raspberry Pi or Jetson hardware measurement is claimed.
 
-For a repeatable **Pi-class resource emulation**, `robot/node.py` can run as an independent robot process inside Docker containers with approximately **1 CPU and 1 GB RAM per robot**. The containers communicate over UDP exactly as separate robot nodes would. CPU/RAM usage and robot-local planning latency should be recorded from those containers and reported as **containerized edge-class emulation**, not physical edge-hardware evidence.
+For repeatable **Pi-class resource emulation**, `robot/node.py` can run as an independent robot process inside Docker containers with approximately 1 CPU and 1 GB RAM per robot. Measurements from this setup should be reported as **containerized edge-class emulation**, not physical hardware evidence.
 
-The physical-hardware measurement helper under `ref_sih_amr/edge/` is retained only as optional instrumentation for a future target-device run.
+The instrumentation under `ref_sih_amr/edge/` is retained for future target-device measurements.
 
 ### Optional Omniverse/MCP integration
 
-The canonical SIH runtime does **not** require NVIDIA Omniverse, OpenUSD, or MCP.
+The canonical SIH runtime does not require NVIDIA Omniverse, OpenUSD, or MCP.
 
-- `ref_sih_amr/` is the judge/demo runtime.
-- `omniverse/`, `assets/omniverse/`, and related USD/scenario material are optional visualization/integration assets.
-- `mcp_fleet/` is optional integration tooling.
+- `ref_sih_amr/` — judge/demo runtime
+- `omniverse/`, `assets/omniverse/` — optional visualization/integration assets
+- `mcp_fleet/` — optional integration tooling
 
-Judges can run the simulator, P2P transport, benchmarks, tests, and dashboard without those components.
+---
 
-## 🧠 Coordination pipeline
+## Coordination pipeline
 
 1. **Tasks enter the fleet queue.**
 2. **The allocator assigns work** to eligible robots.
 3. **A*** generates obstacle-aware paths.
-4. **Peer intents + local reservations** resolve multi-robot conflicts at each robot edge node.
-5. **Runtime safety checks** guard against occupancy, vertex and edge-swap conflicts. CBS is retained only as an explicit centralized comparison strategy.
+4. **Peer intents and local reservations** resolve multi-robot conflicts.
+5. **Runtime safety checks** guard against occupancy, vertex, and edge-swap conflicts.
 6. **Blocked paths or changing conditions** trigger replanning.
-7. **Robot failure or degraded communication** can move work into recovery/reassignment.
-8. **TelemetryBus** publishes the current fleet state to the dashboard.
+7. **Robot failure or degraded communication** can trigger recovery and task reassignment.
+8. **TelemetryBus** publishes fleet state to the dashboard.
 
 ---
 
-## 🔬 Engineering principles
+## Engineering principles
 
-- Core simulation and coordination code does **not** depend on the dashboard.
+- Core simulation and coordination code does not depend on the dashboard.
 - The dashboard consumes telemetry rather than owning coordination logic.
-- Robot coordination is modeled at the **distributed edge-node** level.
+- Robot coordination is modeled at the distributed edge-node level.
 - Deterministic safety checks remain authoritative.
 - Benchmark scenarios remain reproducible.
-- Omniverse integration remains separated from the canonical runtime.
+- Omniverse integration remains separate from the canonical runtime.
+- Evidence is reported with explicit boundaries instead of overstating hardware or deployment results.
 
 ---
 
-## 🎯 SIH Problem Statement
+## SIH problem statement
 
 **26123 — Edge-AI Based Distributed Fleet Coordination for Autonomous Mobile Robots (AMRs) in Smart Warehouses**
 
@@ -255,8 +253,8 @@ The prototype targets coordinated operation of multiple AMRs in warehouse enviro
 
 ---
 
-## 📌 Status
+## Status
 
 **SIH 2026 prototype · actively developed**
 
-For the fastest path to the working demonstration, use the canonical runtime and dashboard described above.
+For the working demonstration, use the canonical runtime and dashboard described above.
