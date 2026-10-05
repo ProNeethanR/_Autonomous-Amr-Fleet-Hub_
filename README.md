@@ -175,7 +175,9 @@ SIH/
 ├── scenarios/                   # Omniverse scenario assets
 ├── mcp_fleet/                   # Optional MCP integration
 ├── docs/validation/             # Validation records
-├── start_dashboard.bat          # Dashboard launcher
+├── scripts/                     # Local dashboard launchers
+│   ├── start_dashboard.bat      # Windows launcher
+│   └── start_dashboard.sh       # Linux/macOS launcher
 ├── requirements.txt             # Live-runtime dependencies
 ├── requirements-dev.txt         # Validation/benchmark/ML dependencies
 ├── SECURITY.md
