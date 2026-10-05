@@ -1,3 +1,9 @@
+[project]
+name = "autonomous-amr-fleet-hub"
+version = "0.1.0"
+description = "Autonomous AMR Fleet Hub"
+requires-python = ">=3.11"
+
 [tool.pytest.ini_options]
 pythonpath = ["ref_sih_amr"]
 testpaths = ["ref_sih_amr/tests"]
